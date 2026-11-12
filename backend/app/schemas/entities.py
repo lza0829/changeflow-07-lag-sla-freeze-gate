@@ -11,3 +11,8 @@ class StreamPatch(BaseModel):
 
 class SettingPut(BaseModel):
     value: str
+
+
+class LagSlaConfigPut(BaseModel):
+    threshold_seconds: int
+    policy: str

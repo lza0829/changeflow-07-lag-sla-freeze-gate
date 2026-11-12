@@ -32,9 +32,18 @@ def list_cursor_view(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         """
         SELECT s.id AS stream_id, s.name, s.apply_cursor,
                (SELECT COUNT(*) FROM applied_seqs a WHERE a.stream_id=s.id) AS applied_seq_count,
-               (SELECT MAX(seq) FROM applied_seqs a WHERE a.stream_id=s.id) AS max_applied_seq
+               (SELECT MAX(seq) FROM applied_seqs a WHERE a.stream_id=s.id) AS max_applied_seq,
+               (SELECT COUNT(*) FROM lag_run_stats l
+                 WHERE l.stream_id=s.id AND l.action='freeze_cursor') AS lag_freeze_count,
+               (SELECT l.action FROM lag_run_stats l
+                 WHERE l.stream_id=s.id ORDER BY l.run_id DESC LIMIT 1) AS last_lag_action
         FROM streams s
         ORDER BY s.id
         """
     ).fetchall()
-    return [dict(r) for r in rows]
+    out = []
+    for r in rows:
+        item = dict(r)
+        item["lag_frozen"] = item["last_lag_action"] == "freeze_cursor"
+        out.append(item)
+    return out

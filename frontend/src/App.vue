@@ -10,6 +10,7 @@
       <router-link to="/quarantine">隔离区</router-link>
       <router-link to="/sink">Sink</router-link>
       <router-link to="/cursors">游标</router-link>
+      <router-link to="/lag-sla">滞后 SLA</router-link>
     </aside>
     <main><router-view /></main>
   </div>
